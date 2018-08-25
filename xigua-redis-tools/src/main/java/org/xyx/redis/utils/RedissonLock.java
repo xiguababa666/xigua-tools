@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedissonLock implements IRedissonLock {
 
-//    @Resource
+    @Resource
     private RedissonClient redissonClient;
 
     @Override
