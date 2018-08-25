@@ -10,13 +10,17 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedissonLock implements IRedissonLock {
 
-    @Resource
+//    @Resource
     private RedissonClient redissonClient;
 
     @Override
     public RLock lock(String key, int leaseTime, boolean fair) {
         RLock lock = getLock(key, fair);
-        lock.lock(leaseTime, TimeUnit.SECONDS);
+        if (leaseTime == 0) {
+            lock.lock();
+        } else {
+            lock.lock(leaseTime, TimeUnit.SECONDS);
+        }
         return lock;
     }
 

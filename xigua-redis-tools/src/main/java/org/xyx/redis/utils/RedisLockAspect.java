@@ -3,21 +3,94 @@ package org.xyx.redis.utils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 @Aspect
 @Component
 public class RedisLockAspect {
 
+    private Logger logger = LoggerFactory.getLogger(RedisLockAspect.class);
+
+    @Resource
+    private RedissonLock redissonLock;
+
+    /**
+     *
+     * lock
+     *
+     * */
     @Around("@annotation(org.xyx.redis.utils.RedisLock)")
-    public void around(ProceedingJoinPoint point) {
-        System.out.println("aspect in");
+    public Object aroundLock(ProceedingJoinPoint point) throws Throwable {
+
+        logger.info("[RedisLockAspect.aroundLock] in");
+
+        RedisLock redisLock = getLockAnnotation(point, RedisLock.class);
+        String key = redisLock.value();
+        int leaseTime = redisLock.leaseTime();
+        boolean fair = redisLock.fair();
+
+        Object result = null;
+        RLock lock = null;
         try {
-            point.proceed();
+            lock = redissonLock.lock(key, leaseTime, fair);
+            if (lock != null) {
+                result = point.proceed();
+            }
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            logger.error("[RedisLockAspect.aroundLock] error occurred, key={}", key, throwable);
+            throw throwable;
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+            logger.info("[RedisLockAspect.aroundLock] out");
         }
-        System.out.println("aspect out");
+        return result;
     }
 
+    /**
+     *
+     * tryLock
+     *
+     * */
+    @Around("@annotation(org.xyx.redis.utils.RedisTryLock)")
+    public Object aroundTryLock(ProceedingJoinPoint point) throws Throwable {
+
+        logger.info("[RedisLockAspect.aroundTryLock] in");
+
+        RedisTryLock redisLock = getLockAnnotation(point, RedisTryLock.class);
+        String key = redisLock.value();
+        int waitTime = redisLock.waitTime();
+        int leaseTime = redisLock.leaseTime();
+        boolean fair = redisLock.fair();
+
+        Object result = null;
+        try {
+            if (redissonLock.tryLock(key, waitTime, leaseTime, fair)) {
+                result = point.proceed();
+            } else {
+                logger.warn("[RedisLockAspect.aroundTryLock] key={} is occupied by another thread!", key);
+            }
+        } catch (Throwable throwable) {
+            logger.error("[RedisLockAspect.aroundTryLock] error occurred, key={}", key, throwable);
+            throw throwable;
+        } finally {
+            logger.info("[RedisLockAspect.aroundTryLock] out");
+        }
+        return result;
+    }
+
+    private <T extends Annotation> T getLockAnnotation(ProceedingJoinPoint point, Class<T> clazz) {
+        MethodSignature methodSignature = (MethodSignature) point.getSignature();
+        Method method = methodSignature.getMethod();
+        return method.getAnnotation(clazz);
+    }
 }

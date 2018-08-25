@@ -2,13 +2,18 @@ package org.xyx.tools.demo.redis;
 
 import org.springframework.stereotype.Component;
 import org.xyx.redis.utils.RedisLock;
+import org.xyx.redis.utils.RedisTryLock;
 
-@Component
+@Component("lockTest")
 public class LockTest {
 
-    @RedisLock(value = "xyx_lock", waitTime = 2, leaseTime = 5)
+    @RedisLock(value = "redis_key_lock_test", leaseTime = 5)
     public void test() {
         System.out.println("I'm test");
     }
 
+    @RedisTryLock(value = "redis_key_lock_test", waitTime = 2, leaseTime = 5)
+    public void test2() {
+        System.out.println("I'm test2");
+    }
 }

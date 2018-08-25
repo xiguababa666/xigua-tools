@@ -1,4 +1,15 @@
 package org.xyx.redis.utils;
 
-public class RedisLock implements IRedisLock {
+import java.lang.annotation.*;
+
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface RedisLock {
+
+    String value() default "";
+
+    int leaseTime() default 0;
+
+    boolean fair() default false;
 }
