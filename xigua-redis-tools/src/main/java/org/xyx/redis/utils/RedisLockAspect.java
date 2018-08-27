@@ -1,9 +1,9 @@
 package org.xyx.redis.utils;
 
-import com.maodou.operate.IOperateAspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * redis 分布式锁切面
