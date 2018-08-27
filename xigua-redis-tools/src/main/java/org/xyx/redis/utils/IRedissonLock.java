@@ -2,6 +2,12 @@ package org.xyx.redis.utils;
 
 import org.redisson.api.RLock;
 
+/**
+ * redis 分布式锁
+ *
+ * @author xyx
+ * @date 2018/8/23 18:11
+ */
 public interface IRedissonLock {
 
     /**
@@ -29,4 +35,11 @@ public interface IRedissonLock {
      * */
     boolean tryLock(String key, int waitTime, int leaseTime, boolean fair);
 
+    /**
+     * 释放锁
+     * @param key 锁key
+     * @param fair 是否公平
+     *
+     * */
+    void unlock(String key, boolean fair);
 }

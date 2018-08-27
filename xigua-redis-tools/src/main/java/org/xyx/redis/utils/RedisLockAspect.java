@@ -1,19 +1,25 @@
 package org.xyx.redis.utils;
 
+import com.maodou.operate.IOperateAspect;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
+/**
+ * redis 分布式锁切面
+ *
+ * @author xyx
+ * @date 2018/8/23 18:11
+ */
 @Aspect
+@Order(-2)
 @Component
 public class RedisLockAspect {
 
@@ -48,7 +54,7 @@ public class RedisLockAspect {
             logger.error("[RedisLockAspect.aroundLock] error occurred, key={}", key, throwable);
             throw throwable;
         } finally {
-            if (lock != null) {
+            if (lock != null && lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
             logger.info("[RedisLockAspect.aroundLock] out");
@@ -83,6 +89,7 @@ public class RedisLockAspect {
             logger.error("[RedisLockAspect.aroundTryLock] error occurred, key={}", key, throwable);
             throw throwable;
         } finally {
+            redissonLock.unlock(key, fair);
             logger.info("[RedisLockAspect.aroundTryLock] out");
         }
         return result;

@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * redis 分布式锁
+ *
+ * @author xyx
+ * @date 2018/8/23 18:11
+ */
 @Component
 public class RedissonLock implements IRedissonLock {
 
@@ -33,6 +39,14 @@ public class RedissonLock implements IRedissonLock {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public void unlock(String key, boolean fair) {
+        RLock lock = getLock(key, fair);
+        if (lock.isHeldByCurrentThread()) {
+            lock.unlock();
+        }
     }
 
     private RLock getLock(String key, boolean fair) {
