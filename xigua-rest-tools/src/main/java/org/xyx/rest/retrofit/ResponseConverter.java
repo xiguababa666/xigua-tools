@@ -1,4 +1,4 @@
-package org.xyx.retrofit;
+package org.xyx.rest.retrofit;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;

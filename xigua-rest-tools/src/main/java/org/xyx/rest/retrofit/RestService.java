@@ -1,4 +1,4 @@
-package org.xyx.retrofit;
+package org.xyx.rest.retrofit;
 
 import java.lang.annotation.*;
 

@@ -12,6 +12,7 @@
         <module>xigua-redis-tools</module>
         <module>xigua-tools-demo</module>
         <module>xigua-mybatis-trigger</module>
+        <module>xigua-rest-tools</module>
     </modules>
 
     <parent>
