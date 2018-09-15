@@ -23,6 +23,8 @@
     <properties>
         <redisson.version>3.7.5</redisson.version>
         <spring.version>5.0.8.RELEASE</spring.version>
+        <retrotif.version>2.4.0</retrotif.version>
+        <fastjson.version>1.2.49</fastjson.version>
     </properties>
 
     <dependencies>
@@ -39,6 +41,16 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aspects</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.retrofit2</groupId>
+                <artifactId>retrofit</artifactId>
+                <version>${retrotif.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
