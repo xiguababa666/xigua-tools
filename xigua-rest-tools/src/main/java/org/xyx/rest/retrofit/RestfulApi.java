@@ -5,12 +5,12 @@ import java.lang.annotation.*;
 /**
  * description
  *
- * @author xyx
- * @date 2018/9/14 15:21
+ * @author xueyongxin
+ * @date 2019/4/2 21:44
  */
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Documented
-public @interface RestApi {
+public @interface RestfulApi {
 }
