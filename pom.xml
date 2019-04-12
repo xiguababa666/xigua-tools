@@ -26,6 +26,7 @@
         <spring.version>5.0.8.RELEASE</spring.version>
         <retrotif.version>2.4.0</retrotif.version>
         <fastjson.version>1.2.49</fastjson.version>
+        <lombok.version>1.16.18</lombok.version>
     </properties>
 
     <dependencies>

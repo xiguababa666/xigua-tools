@@ -1,39 +1,40 @@
 package org.xyx.rest.retrofit;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.ResponseBody;
-import okio.BufferedSource;
-import okio.Okio;
 import retrofit2.Converter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 
 /**
- * description
+ * 返回值转换成对象
  *
- * @author xyx
- * @date 2018/9/14 13:32
+ * @author xueyongxin
+ * @date 2019/4/2 21:44
  */
+
+@Slf4j
 public class ResponseConverter<T> implements Converter<ResponseBody, T> {
 
     private final Type type;
 
-    ResponseConverter(Type type) {
-        this.type = type;
+    private boolean debug;
 
+    ResponseConverter(Type type, boolean debug) {
+        this.type = type;
+        this.debug = debug;
     }
 
     @Override
     public T convert(ResponseBody responseBody) throws IOException {
-        BufferedSource source = Okio.buffer(responseBody.source());
-        String str = source.readUtf8();
-        try {
-            return JSON.parseObject(str, type);
-        } catch (JSONException e) {
-            return null;
+        String str = responseBody.string();
+        // 此处可以添加log
+        if (debug) {
+            log.info("RESPONSE => {}", str);
         }
+        return JSON.parseObject(str, type);
     }
 
 }
