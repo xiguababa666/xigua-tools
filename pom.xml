@@ -10,10 +10,9 @@
     <version>0.0.1</version>
     <modules>
         <module>xigua-redis-tools</module>
-        <module>xigua-tools-demo</module>
-        <module>xigua-mybatis-trigger</module>
         <module>xigua-rest-tools</module>
         <module>xigua-date-tools</module>
+        <module>xigua-tools-demo</module>
     </modules>
 
     <parent>
