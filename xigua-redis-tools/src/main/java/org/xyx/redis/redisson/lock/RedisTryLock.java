@@ -1,4 +1,4 @@
-package org.xyx.redis.utils;
+package org.xyx.redis.redisson.lock;
 
 import java.lang.annotation.*;
 
@@ -13,11 +13,30 @@ import java.lang.annotation.*;
 @Documented
 public @interface RedisTryLock {
 
+    /**
+     *
+     * key 共享资源
+     *
+     * */
     String value() default "";
 
+    /**
+     *
+     * 尝试获取锁等待时间
+     *
+     * */
     int waitTime() default 0;
 
+    /**
+     *
+     * 释放锁时间
+     *
+     * */
     int leaseTime() default 0;
 
+    /**
+     * 是否公平锁
+     * true - 是
+     * */
     boolean fair() default false;
 }

@@ -1,10 +1,11 @@
-package org.xyx.redis.utils;
+package org.xyx.redis.redisson.lock;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 /**
  * redis 分布式锁切面
@@ -28,30 +30,43 @@ public class RedisLockAspect {
     private Logger logger = LoggerFactory.getLogger(RedisLockAspect.class);
 
     @Resource
-    private RedissonLock redissonLock;
+    private RedissonClient redissonClient;
 
     /**
      *
      * lock
      *
      * */
-    @Around("@annotation(org.xyx.redis.utils.RedisLock)")
+    @Around("@annotation(RedisLock)")
     public Object aroundLock(ProceedingJoinPoint point) throws Throwable {
 
-        logger.info("[RedisLockAspect.aroundLock] in");
+        logger.info("[RedisLockAspect.aroundLock] Begin");
 
         RedisLock redisLock = getLockAnnotation(point, RedisLock.class);
         String key = redisLock.value();
         int leaseTime = redisLock.leaseTime();
         boolean fair = redisLock.fair();
 
-        Object result = null;
+        Object result;
         RLock lock = null;
         try {
-            lock = redissonLock.lock(key, leaseTime, fair);
-            if (lock != null) {
-                result = point.proceed();
+            /*
+             *
+             * 获取锁，阻塞式，获取后需要主动释放
+             *
+             * key 锁key
+             * leaseTime 持有时间，持有锁超过此时间(单位：秒)，其他线程可以获取锁
+             * fair 是否公平锁
+             *
+             */
+            lock = getLock(key, fair);
+            if (leaseTime == 0) {
+                lock.lock();
+            } else {
+                lock.lock(leaseTime, TimeUnit.SECONDS);
             }
+            result = point.proceed();
+
         } catch (Throwable throwable) {
             logger.error("[RedisLockAspect.aroundLock] error occurred, key={}", key, throwable);
             throw throwable;
@@ -59,7 +74,7 @@ public class RedisLockAspect {
             if (lock != null && lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
-            logger.info("[RedisLockAspect.aroundLock] out");
+            logger.info("[RedisLockAspect.aroundLock] End");
         }
         return result;
     }
@@ -69,10 +84,10 @@ public class RedisLockAspect {
      * tryLock
      *
      * */
-    @Around("@annotation(org.xyx.redis.utils.RedisTryLock)")
+    @Around("@annotation(RedisTryLock)")
     public Object aroundTryLock(ProceedingJoinPoint point) throws Throwable {
 
-        logger.info("[RedisLockAspect.aroundTryLock] in");
+        logger.info("[RedisLockAspect.aroundTryLock] Begin");
 
         RedisTryLock redisLock = getLockAnnotation(point, RedisTryLock.class);
         String key = redisLock.value();
@@ -81,8 +96,21 @@ public class RedisLockAspect {
         boolean fair = redisLock.fair();
 
         Object result = null;
+        RLock lock = null;
         try {
-            if (redissonLock.tryLock(key, waitTime, leaseTime, fair)) {
+
+            /**
+             *
+             * 尝试获取锁
+             *
+             * key 锁key
+             * waitTime 等待时间，超过此时间，直接返回获取锁失败(单位：秒)
+             * leaseTime 持有时间，持有锁超过此时间，其他线程可以获取锁
+             * fair 是否公平锁
+             *
+             * */
+            lock = getLock(key, fair);
+            if (lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS)) {
                 result = point.proceed();
             } else {
                 logger.warn("[RedisLockAspect.aroundTryLock] key={} is occupied by another thread!", key);
@@ -91,8 +119,10 @@ public class RedisLockAspect {
             logger.error("[RedisLockAspect.aroundTryLock] error occurred, key={}", key, throwable);
             throw throwable;
         } finally {
-            redissonLock.unlock(key, fair);
-            logger.info("[RedisLockAspect.aroundTryLock] out");
+            if (lock != null) {
+                lock.unlock();
+            }
+            logger.info("[RedisLockAspect.aroundTryLock] End");
         }
         return result;
     }
@@ -101,5 +131,15 @@ public class RedisLockAspect {
         MethodSignature methodSignature = (MethodSignature) point.getSignature();
         Method method = methodSignature.getMethod();
         return method.getAnnotation(clazz);
+    }
+
+    private RLock getLock(String key, boolean fair) {
+        RLock lock;
+        if (fair) {
+            lock = redissonClient.getFairLock(key);
+        } else {
+            lock = redissonClient.getLock(key);
+        }
+        return lock;
     }
 }
