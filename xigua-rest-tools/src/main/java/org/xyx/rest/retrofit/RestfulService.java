@@ -18,7 +18,7 @@ public @interface RestfulService {
 
     /**
      *
-     * restful 配置key 详见{@see org.xyx.rest.retrofit.RetrofitRestfulConfig}
+     * restful 配置key 详见{@see org.xyx.rest.retrofit.RetrofitRestfulConfig yourServerName}
      *
      */
     @AliasFor("value")

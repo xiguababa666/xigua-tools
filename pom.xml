@@ -13,6 +13,7 @@
         <module>xigua-rest-tools</module>
         <module>xigua-date-tools</module>
         <module>xigua-tools-demo</module>
+        <module>xigua-db-tools</module>
     </modules>
 
     <parent>

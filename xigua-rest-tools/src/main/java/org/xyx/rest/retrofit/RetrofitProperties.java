@@ -9,7 +9,24 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * description
+ *
+ * yml
+ * -
+ * retrofit:
+ *   config:
+ *     yourServerName:
+ *       domain: yourDomain
+ *       appKey: yourAppKey
+ *       appSecret: yourSecret
+ *       connectTimeout: 30
+ *       writeTimeout: 30
+ *       readTimeout: 30
+ *
+ * properties
+ * -
+ * retrofit.config.yourServerName.domain=yourDomain
+ * retrofit.config.yourServerName.appKey=yourAppKey
+ * retrofit.config.yourServerName.appSecret=yourSecret
  *
  * @author xueyongxin
  * @date 2019/4/2 21:44

@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * RestfulService注入，此处实现依赖Spring
+ * RestfulService注入，此处实现依赖【Spring、java的反射】
  *
  * @author xueyongxin
  * @date 2019/4/2 21:44

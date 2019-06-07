@@ -1,8 +1,8 @@
 package org.xyx.tools.demo.redis;
 
 import org.springframework.stereotype.Component;
-import org.xyx.redis.utils.RedisLock;
-import org.xyx.redis.utils.RedisTryLock;
+import org.xyx.redis.redisson.lock.RedisLock;
+import org.xyx.redis.redisson.lock.RedisTryLock;
 
 @Component("lockTest")
 public class LockTest {
