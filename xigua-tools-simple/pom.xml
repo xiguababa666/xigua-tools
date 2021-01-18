@@ -9,18 +9,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>xigua-tools-demo</artifactId>
+    <artifactId>xigua-tools-simple</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.xyx</groupId>
-            <artifactId>xigua-redis-tools</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-    </dependencies>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
 </project>

@@ -13,10 +13,13 @@ public class HeaderInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate request) {
-        request.method();
-        request.path();
-        request.url();
+        String method = request.method();
+        String path = request.path();
+        String url = request.url();
 
+        System.out.println("[HeaderInterceptor] method:" + method);
+        System.out.println("[HeaderInterceptor]   path:" + path);
+        System.out.println("[HeaderInterceptor]    url:" + url);
         // todo
     }
 

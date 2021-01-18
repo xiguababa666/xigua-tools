@@ -10,11 +10,12 @@
     <version>0.0.1</version>
     <modules>
         <module>xigua-redis-tools</module>
-        <module>xigua-rest-tools</module>
+        <module>xigua-rest-retrofit</module>
         <module>xigua-date-tools</module>
-        <module>xigua-tools-demo</module>
         <module>xigua-db-tools</module>
         <module>xigua-rest-feign</module>
+        <module>xigua-tools-simple</module>
+        <module>xigua-tools-spring</module>
     </modules>
 
     <parent>

@@ -4,6 +4,8 @@ import feign.Feign;
 import feign.Request;
 import feign.RequestInterceptor;
 import feign.Retryer;
+import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -42,7 +44,7 @@ public class ApiInject extends InstantiationAwareBeanPostProcessorAdapter implem
     /**
      * 复用
      * */
-    private final static Map<String, Object> restServices = new HashMap<>(4);
+    private final static Map<String, Object> restServices = new HashMap<>();
 
     @Override
     public boolean postProcessAfterInstantiation(Object bean, String beanName) {
@@ -97,8 +99,8 @@ public class ApiInject extends InstantiationAwareBeanPostProcessorAdapter implem
         int retries = config.getRetries();
 
         Feign.Builder builder = Feign.builder()
-                .encoder(new RequestEncoder())
-                .decoder(new ResponseDecoder())
+                .encoder(new JacksonEncoder())
+                .decoder(new JacksonDecoder())
                 .options(new Request.Options(connectionTimeout, readTimeout))
                 .retryer(new Retryer.Default(retryPeriod, retryPeriod, retries));
 
