@@ -14,7 +14,15 @@ public final class StringUtils {
 
 
     public static String trim(String str, char ch) {
-        return null;
+
+        if (isEmpty(str)) return str;
+
+        char[] chars = str.toCharArray();
+        int start = 0, end = chars.length - 1;
+        while (start <= end && chars[start] == ch) start++;
+        if (start > end) return "";
+        while (end >= 0 && chars[end] == ch) end--;
+        return str.substring(start, end + 1);
     }
 
 
