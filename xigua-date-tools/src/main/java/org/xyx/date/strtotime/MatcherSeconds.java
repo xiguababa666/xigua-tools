@@ -3,7 +3,7 @@ package org.xyx.date.strtotime;
 /**
  * description here
  *
- * @author xueyongxin002
+ * @author xueyongxin
  * @date 2020/12/22
  */
 public class MatcherSeconds extends AbstractMather {

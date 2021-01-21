@@ -6,7 +6,7 @@ import feign.RequestTemplate;
 /**
  * description here
  *
- * @author xueyongxin002
+ * @author xueyongxin
  * @date 2020/12/29
  */
 public class SignInterceptor implements RequestInterceptor {

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * description here
  *
- * @author xueyongxin002
+ * @author xueyongxin
  * @date 2020/12/22
  */
 public final class StrToTime {

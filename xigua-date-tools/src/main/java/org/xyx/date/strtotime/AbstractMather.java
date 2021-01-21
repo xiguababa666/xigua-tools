@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 /**
  * description here
  *
- * @author xueyongxin002
+ * @author xueyongxin
  * @date 2020/12/22
  */
 public abstract class AbstractMather implements ITimeMatcher {
