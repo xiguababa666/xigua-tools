@@ -1,4 +1,4 @@
-package org.xyx.redis.lock.config;
+package org.xyx.redis.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +10,10 @@ import org.xyx.utils.SpringUtils;
 /**
  * description here
  *
- * @author xueyongxin002
- * @date 2021/1/14 上午10:36
+ * @author xueyongxin
  */
 
-@Import({SpringUtils.class, RedissonBeanConfig.class})
+@Import({SpringUtils.class, RedissonBeanConfig.class, RedisBeanConfig.class})
 @Configuration
 public class RedisAutoConfig {
 

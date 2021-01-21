@@ -1,4 +1,4 @@
-package org.xyx.redis.lock.config;
+package org.xyx.redis.config;
 
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -10,8 +10,7 @@ import org.xyx.redis.lock.redisson.RedissonLocker;
 /**
  * description here
  *
- * @author xueyongxin002
- * @date 2021/1/14 上午11:33
+ * @author xueyongxin
  */
 
 @Configuration

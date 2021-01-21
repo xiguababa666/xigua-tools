@@ -6,8 +6,7 @@ import org.xyx.utils.SpringUtils;
 /**
  * description here
  *
- * @author xueyongxin002
- * @date 2021/1/11 下午12:20
+ * @author xueyongxin
  */
 public enum LockType {
 
