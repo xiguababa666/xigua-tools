@@ -25,7 +25,7 @@ public class RedisBeanConfig {
     @Bean
     @ConditionalOnBean(value = RedisTemplate.class)
     public RedisUtils redisUtil(RedisTemplate<String, Object> redisTemplate) {
-        logger.info("[WengerConfig] *RedisUtil*");
+        logger.info("[RedisBeanConfig] *RedisUtil*");
         return new RedisUtils(redisTemplate);
     }
 
