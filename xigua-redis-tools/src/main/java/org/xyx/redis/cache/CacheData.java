@@ -6,17 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * description here
  *
  * @author xueyongxin
  */
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DataCache {
+public @interface CacheData {
 
     String key();
 
-
+    CacheType type() default CacheType.REDIS;
 
 }
