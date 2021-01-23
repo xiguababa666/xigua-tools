@@ -13,7 +13,7 @@ public abstract class BaseCacher implements Cacher {
     /**
      * 生成随机过期时间，防止集中过期
      *
-     * @param time 过期时间
+     * @param time 过期时间 秒
      * @return 秒
      * */
     protected static long generateTimeOffset(long time) {

@@ -3,6 +3,7 @@ package org.xyx.redis.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.xyx.redis.cache.CacheAspect;
 import org.xyx.redis.lock.LockAspect;
 import org.xyx.redis.lock.reentrant.ReentrantLocker;
 import org.xyx.utils.SpringUtils;
@@ -29,4 +30,8 @@ public class RedisAutoConfig {
     }
 
 
+    @Bean
+    public CacheAspect cacheAspect() {
+        return new CacheAspect();
+    }
 }

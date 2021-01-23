@@ -16,6 +16,15 @@ public @interface CacheData {
 
     String key();
 
+    /**
+     * "redis cache" OR "local cache"
+     * */
     CacheType type() default CacheType.REDIS;
+
+    /**
+     * 过期时间，单位：秒
+     *
+     * */
+    long expire() default -1;
 
 }

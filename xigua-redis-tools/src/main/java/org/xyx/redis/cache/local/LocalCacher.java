@@ -79,7 +79,8 @@ public class LocalCacher extends BaseCacher implements InitializingBean {
             cache.remove(key);
             return null;
         }
-        return cache.get(key);
+        CacheData data = cache.get(key);
+        return data != null ? data.getData() : null;
     }
 
 

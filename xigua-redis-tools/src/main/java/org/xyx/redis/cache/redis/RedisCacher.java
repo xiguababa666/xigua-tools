@@ -1,5 +1,6 @@
 package org.xyx.redis.cache.redis;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.xyx.redis.RedisUtils;
 import org.xyx.redis.cache.BaseCacher;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author xueyongxin
  */
 
+@Lazy
 @Component
 public class RedisCacher extends BaseCacher implements Cacher {
 
