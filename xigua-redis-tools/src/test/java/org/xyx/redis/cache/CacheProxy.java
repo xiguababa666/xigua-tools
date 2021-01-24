@@ -23,4 +23,11 @@ public class CacheProxy {
         return "the value of key 'xyx'";
     }
 
+
+    @CacheData(key = "xyx_%s", type = CacheType.LOCAL)
+    public String test(String v) {
+        logger.info("[CacheProxy] test({}) in --------->", v);
+        return String.format("the value of key 'xyx_%s'", v);
+    }
+
 }

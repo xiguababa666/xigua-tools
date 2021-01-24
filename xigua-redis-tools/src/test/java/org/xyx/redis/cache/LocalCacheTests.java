@@ -30,11 +30,21 @@ public class LocalCacheTests {
 
 
     @Test
-    public void test() {
+    public void test1() {
         String s = cacheProxy.test();
         logger.info("[====LocalCacheTests====] 1 get value = {}", s);
 
         s = cacheProxy.test();
+        logger.info("[====LocalCacheTests====] 2 get value = {}", s);
+    }
+
+
+    @Test
+    public void test2() {
+        String s = cacheProxy.test("abc");
+        logger.info("[====LocalCacheTests====] 1 get value = {}", s);
+
+        s = cacheProxy.test("abc");
         logger.info("[====LocalCacheTests====] 2 get value = {}", s);
     }
 
