@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.xyx.redis.ReflectUtil;
 import org.xyx.utils.StringUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -40,53 +37,80 @@ public class CacheAspect {
         CacheType type = dataCache.type();
 
         Object[] params = point.getArgs();
-        if (isSingleKey(params)) {
 
+        checkKey(key, params);
+        int collectionIndex = getCollectionIndex(params);
+        List<String> cacheKeys;
+        if (-1 == collectionIndex) {
+            cacheKeys = new ArrayList<>();
+            cacheKeys.add(generateSingleKey(key, params));
         } else {
-
+            cacheKeys = generateKeys(key, collectionIndex, params);
         }
+        logger.info("[CacheAspect] cacheKeys = {}", cacheKeys);
 
+        return point.proceed();
 
-        Object cached = type.getCacher().get(key);
-        if (cached != null) {
-            logger.info("[CacheAspect] cached! key:{}", key);
-            return cached;
-        }
-
-
-        logger.info("[CacheAspect] not cached! key:{}", key);
-        Object notCached = point.proceed();
-        type.getCacher().set(key, notCached);
-
-        return notCached;
+//        Object cached = type.getCacher().get(key);
+//        if (cached != null) {
+//            logger.info("[CacheAspect] cached! key:{}", key);
+//            return cached;
+//        }
+//
+//
+//        logger.info("[CacheAspect] not cached! key:{}", key);
+//        Object notCached = point.proceed();
+//        type.getCacher().set(key, notCached);
+//
+//        return notCached;
 
     }
 
-    private List<String> getKeys(String key, Object... params) {
+
+    private String generateSingleKey(String key, Object... params) {
+        return String.format(key, params);
+    }
+
+
+
+    private List<String> generateKeys(String key, int collectionIndex, Object... params) {
 
         List<String> keys = new LinkedList<>();
-
-
-
+        Collection<Object> ids = (Collection<Object>) params[collectionIndex];
+        for (Object id : ids) {
+            Object[] p = new Object[params.length];
+            for (int i = 0; i < params.length; i++) {
+                if (i == collectionIndex) {
+                    p[i] = id;
+                } else {
+                    p[i] = params[i];
+                }
+            }
+            keys.add(String.format(key, p));
+        }
         return keys;
 
     }
 
 
-    private boolean isSingleKey(Object... params) {
+    private int getCollectionIndex(Object... params) {
         if (params.length == 0) {
-            return true;
+            return -1;
         }
 
         int collectionCount = 0;
-        for (Object p : params) {
-            if (p instanceof Collection) collectionCount++;
+        int collectionIndex = -1;
+        for (int i = 0; i < params.length; i++) {
+            if (params[i] instanceof Collection) {
+                collectionCount++;
+                collectionIndex = i;
+            }
         }
         if ( collectionCount > 1) {
             throw new CacheDataException(String.format("cache key params not supported: %s collection", collectionCount));
         }
 
-        return collectionCount == 0;
+        return collectionIndex;
     }
 
 

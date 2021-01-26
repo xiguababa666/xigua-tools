@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * description here
  *
@@ -28,6 +30,13 @@ public class CacheProxy {
     public String test(String v) {
         logger.info("[CacheProxy] test({}) in --------->", v);
         return String.format("the value of key 'xyx_%s'", v);
+    }
+
+
+    @CacheData(key = "xyx_%s_%s", type = CacheType.LOCAL)
+    public String test(String v, List<Integer> ids) {
+        logger.info("[CacheProxy] test({}, {}) in --------->", v, ids);
+        return String.format("the value of key 'xyx_%s_%s'", v, ids);
     }
 
 }

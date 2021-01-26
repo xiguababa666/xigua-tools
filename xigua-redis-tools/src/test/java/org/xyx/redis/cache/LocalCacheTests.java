@@ -9,6 +9,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.xyx.redis.Application;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * description here
@@ -44,8 +46,21 @@ public class LocalCacheTests {
         String s = cacheProxy.test("abc");
         logger.info("[====LocalCacheTests====] 1 get value = {}", s);
 
-        s = cacheProxy.test("abc");
-        logger.info("[====LocalCacheTests====] 2 get value = {}", s);
+//        s = cacheProxy.test("abc");
+//        logger.info("[====LocalCacheTests====] 2 get value = {}", s);
+    }
+
+
+    @Test
+    public void test3() {
+        List<Integer> ids = new ArrayList<>();
+        ids.add(1);
+        ids.add(2);
+        String s = cacheProxy.test("abc", ids);
+        logger.info("[====LocalCacheTests====] 1 get value = {}", s);
+
+//        s = cacheProxy.test("abc");
+//        logger.info("[====LocalCacheTests====] 2 get value = {}", s);
     }
 
 
