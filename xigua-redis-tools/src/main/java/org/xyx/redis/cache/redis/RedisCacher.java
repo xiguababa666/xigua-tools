@@ -9,6 +9,7 @@ import org.xyx.redis.cache.Cacher;
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * description here

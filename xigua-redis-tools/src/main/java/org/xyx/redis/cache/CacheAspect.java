@@ -35,6 +35,7 @@ public class CacheAspect {
 
         String key = dataCache.key();
         CacheType type = dataCache.type();
+        Class<?> result = dataCache.result();
 
         Object[] params = point.getArgs();
 
@@ -48,6 +49,10 @@ public class CacheAspect {
             cacheKeys = generateKeys(key, collectionIndex, params);
         }
         logger.info("[CacheAspect] cacheKeys = {}", cacheKeys);
+
+        List<Object> cached = type.getCacher().get(cacheKeys);
+
+
 
         return point.proceed();
 

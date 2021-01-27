@@ -9,10 +9,7 @@ import org.xyx.redis.cache.BaseCacher;
 import org.xyx.utils.ThreadPool;
 
 import javax.annotation.PreDestroy;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -95,7 +92,7 @@ public class LocalCacher extends BaseCacher implements InitializingBean {
         for (String key : keys) {
             Object v = getIfNotExpired(key);
             if (v != null) {
-                values.add(cache);
+                values.add(v);
             }
         }
         return values;

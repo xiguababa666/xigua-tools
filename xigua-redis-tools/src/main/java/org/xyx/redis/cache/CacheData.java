@@ -27,4 +27,7 @@ public @interface CacheData {
      * */
     long expire() default -1;
 
+
+    Class<?> result() default Object.class;
+
 }
