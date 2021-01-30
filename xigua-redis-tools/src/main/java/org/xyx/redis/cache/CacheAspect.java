@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xyx.redis.ReflectUtil;
+import org.xyx.redis.cache.anno.CacheMultiKeys;
+import org.xyx.redis.cache.anno.CacheSingleKey;
 import org.xyx.utils.StringUtils;
 
 import java.util.*;
@@ -24,14 +26,48 @@ public class CacheAspect {
     private static final Logger logger = LoggerFactory.getLogger(CacheAspect.class);
 
 
-    @Pointcut("@annotation(org.xyx.redis.cache.CacheData)")
-    public void aroundDataCache() {
+    @Pointcut("@annotation(org.xyx.redis.cache.anno.CacheSingleKey)")
+    public void aroundCacheSingleKey() {
     }
 
-    @Around("aroundDataCache()")
-    public Object aroundDataCache(ProceedingJoinPoint point) throws Throwable {
+    @Pointcut("@annotation(org.xyx.redis.cache.anno.CacheMultiKeys)")
+    public void aroundCacheMultiKeys() {
+    }
 
-        CacheData dataCache = ReflectUtil.getAnnotation(point, CacheData.class);
+    @Around("aroundCacheSingleKey()")
+    public Object aroundCacheSingleKey(ProceedingJoinPoint point) throws Throwable {
+
+        CacheSingleKey dataCache = ReflectUtil.getAnnotation(point, CacheSingleKey.class);
+
+        String key = dataCache.key();
+        CacheType type = dataCache.type();
+
+        // todo Collection 怎么处理？
+        Class<?> result = dataCache.result();
+
+        Object[] params = point.getArgs();
+
+        checkKey(key, params);
+        String cacheKey = generateSingleKey(key, params);
+        Object cached = type.getCacher().get(cacheKey, result);
+        if (cached == null) {
+            logger.info("[CacheAspect] not cached, cacheKey = {}", cacheKey);
+            cached = point.proceed();
+            type.getCacher().set(cacheKey, cached);
+        } else {
+            logger.info("[CacheAspect] cached, cacheKey = {}, value = {}", cacheKey, cached);
+        }
+        return cached;
+
+    }
+
+    /**
+     * todo 多key时，已命中和未命中的分别如何处理
+     * */
+    @Around("aroundCacheMultiKeys()")
+    public Object aroundCacheMultiKeys(ProceedingJoinPoint point) throws Throwable {
+
+        CacheMultiKeys dataCache = ReflectUtil.getAnnotation(point, CacheMultiKeys.class);
 
         String key = dataCache.key();
         CacheType type = dataCache.type();
@@ -41,34 +77,12 @@ public class CacheAspect {
 
         checkKey(key, params);
         int collectionIndex = getCollectionIndex(params);
-        List<String> cacheKeys;
-        if (-1 == collectionIndex) {
-            cacheKeys = new ArrayList<>();
-            cacheKeys.add(generateSingleKey(key, params));
-        } else {
-            cacheKeys = generateKeys(key, collectionIndex, params);
-        }
+        Map<String, Object> keyMap = generateKeys(key, collectionIndex, params);
+        List<String> cacheKeys = new LinkedList<>(keyMap.keySet());
+        Map<String, Object> cached = type.getCacher().get(cacheKeys);
         logger.info("[CacheAspect] cacheKeys = {}", cacheKeys);
 
-        List<Object> cached = type.getCacher().get(cacheKeys);
-
-
-
         return point.proceed();
-
-//        Object cached = type.getCacher().get(key);
-//        if (cached != null) {
-//            logger.info("[CacheAspect] cached! key:{}", key);
-//            return cached;
-//        }
-//
-//
-//        logger.info("[CacheAspect] not cached! key:{}", key);
-//        Object notCached = point.proceed();
-//        type.getCacher().set(key, notCached);
-//
-//        return notCached;
-
     }
 
 
@@ -78,9 +92,9 @@ public class CacheAspect {
 
 
 
-    private List<String> generateKeys(String key, int collectionIndex, Object... params) {
+    private Map<String, Object> generateKeys(String key, int collectionIndex, Object... params) {
 
-        List<String> keys = new LinkedList<>();
+        Map<String, Object> keys = new LinkedHashMap<>();
         Collection<Object> ids = (Collection<Object>) params[collectionIndex];
         for (Object id : ids) {
             Object[] p = new Object[params.length];
@@ -91,7 +105,7 @@ public class CacheAspect {
                     p[i] = params[i];
                 }
             }
-            keys.add(String.format(key, p));
+            keys.put(String.format(key, p), id);
         }
         return keys;
 

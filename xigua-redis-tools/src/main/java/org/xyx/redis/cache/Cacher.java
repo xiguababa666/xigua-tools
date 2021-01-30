@@ -1,7 +1,7 @@
 package org.xyx.redis.cache;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * description here
@@ -14,13 +14,13 @@ public interface Cacher {
      * @param key
      * @return 命中缓存的数据
      * */
-    Object get(String key);
+    Object get(String key, Class<?> clazz);
 
     /**
      * @param keys
      * @return 命中缓存的数据
      * */
-    List<Object> get(Collection<String> keys);
+    Map<String, Object> get(List<String> keys);
 
     /**
      * @param key

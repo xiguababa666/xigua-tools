@@ -1,4 +1,6 @@
-package org.xyx.redis.cache;
+package org.xyx.redis.cache.anno;
+
+import org.xyx.redis.cache.CacheType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,7 +14,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface CacheData {
+public @interface CacheSingleKey {
 
     String key();
 

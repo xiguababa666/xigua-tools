@@ -82,17 +82,17 @@ public class LocalCacher extends BaseCacher implements InitializingBean {
 
 
     @Override
-    public Object get(String key) {
+    public Object get(String key, Class<?> clazz) {
         return getIfNotExpired(key);
     }
 
     @Override
-    public List<Object> get(Collection<String> keys) {
-        List<Object> values = new LinkedList<>();
+    public Map<String, Object> get(List<String> keys) {
+        Map<String, Object> values = new LinkedHashMap<>();
         for (String key : keys) {
             Object v = getIfNotExpired(key);
             if (v != null) {
-                values.add(v);
+                values.put(key, v);
             }
         }
         return values;

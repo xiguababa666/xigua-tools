@@ -11,7 +11,7 @@
     <modules>
         <module>xigua-redis-tools</module>
         <module>xigua-rest-retrofit</module>
-        <module>xigua-date-tools</module>
+        <module>xigua-date-strtotime</module>
         <module>xigua-db-tools</module>
         <module>xigua-rest-feign</module>
         <module>xigua-tools-simple</module>
@@ -31,6 +31,8 @@
         <lombok.version>1.16.18</lombok.version>
         <feign-version>10.2.3</feign-version>
         <slf4j-version>1.7.28</slf4j-version>
+        <jackson.version>2.10.0</jackson.version>
+        <common.lang3.version>3.9</common.lang3.version>
     </properties>
 
     <dependencies>
@@ -72,6 +74,24 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${common.lang3.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

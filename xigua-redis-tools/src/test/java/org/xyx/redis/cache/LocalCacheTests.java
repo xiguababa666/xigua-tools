@@ -42,6 +42,25 @@ public class LocalCacheTests {
 
 
     @Test
+    public void testObjLocal() {
+        CacheProxy.CacheValue s = cacheProxy.testObjLocal();
+        logger.info("[====LocalCacheTests====] testObjLocal 1 get value = {}", s);
+
+        s = cacheProxy.testObjLocal();
+        logger.info("[====LocalCacheTests====] testObjLocal 2 get value = {}", s);
+    }
+
+    @Test
+    public void testObjRedis() {
+        CacheProxy.CacheValue s = cacheProxy.testObjRedis();
+        logger.info("[====LocalCacheTests====] testObjRedis 1 get value = {}", s);
+
+        s = cacheProxy.testObjRedis();
+        logger.info("[====LocalCacheTests====] testObjRedis 2 get value = {}", s);
+    }
+
+
+    @Test
     public void test2() {
         String s = cacheProxy.test("abc");
         logger.info("[====LocalCacheTests====] 1 get value = {}", s);
