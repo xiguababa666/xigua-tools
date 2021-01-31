@@ -1,5 +1,6 @@
 package org.xyx.redis.cache;
 
+import com.fasterxml.jackson.databind.JavaType;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.xyx.redis.ReflectUtil;
 import org.xyx.redis.cache.anno.CacheMultiKeys;
 import org.xyx.redis.cache.anno.CacheSingleKey;
+import org.xyx.utils.JsonUtil;
 import org.xyx.utils.StringUtils;
 
 import java.util.*;
@@ -44,6 +46,10 @@ public class CacheAspect {
 
         // todo Collection 怎么处理？
         Class<?> result = dataCache.result();
+        Class<?> returnType = ReflectUtil.getMethod(point).getReturnType();
+        if (Collection.class.isAssignableFrom(returnType)) {
+            JavaType javaType = JsonUtil.getJavaType((Class<? extends Collection>) returnType, result);
+        }
 
         Object[] params = point.getArgs();
 

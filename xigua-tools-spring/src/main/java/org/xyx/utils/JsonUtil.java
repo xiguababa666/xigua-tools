@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -80,6 +81,9 @@ public class JsonUtil {
         }
     }
 
+    public static JavaType getJavaType(Class<? extends Collection> c, Class<?> clazz) {
+        return getInstance().getTypeFactory().constructParametricType(c, clazz);
+    }
 
     private static ObjectMapper getInstance() {
         return SingletonHolder.instance;

@@ -18,7 +18,7 @@ import java.util.List;
 public class ReflectUtil {
 
 
-    private static Method getMethod(ProceedingJoinPoint point) {
+    public static Method getMethod(ProceedingJoinPoint point) {
         MethodSignature methodSignature = (MethodSignature) point.getSignature();
         return methodSignature.getMethod();
     }
