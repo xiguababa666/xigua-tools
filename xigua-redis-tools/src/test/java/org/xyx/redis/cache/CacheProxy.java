@@ -3,9 +3,9 @@ package org.xyx.redis.cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.xyx.redis.cache.anno.CacheMultiKeys;
 import org.xyx.redis.cache.anno.CacheSingleKey;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,36 +21,49 @@ public class CacheProxy {
     private static final Logger logger = LoggerFactory.getLogger(CacheProxy.class);
 
 
-    @CacheSingleKey(key = "xyx", type = CacheType.LOCAL)
-    public String test() {
-        logger.info("[CacheProxy] test in --------->");
-        return "the value of key 'xyx'";
-    }
-
-    @CacheSingleKey(key = "xyx", type = CacheType.LOCAL)
+    @CacheSingleKey(type = CacheType.LOCAL)
     public CacheValue testObjLocal() {
         logger.info("[CacheProxy] testObjLocal in --------->");
         return new CacheValue(100, "xyx");
     }
 
-    @CacheSingleKey(key = "xyx", type = CacheType.REDIS, result = CacheValue.class)
+    @CacheSingleKey
     public CacheValue testObjRedis() {
         logger.info("[CacheProxy] testObjRedis in --------->");
         return new CacheValue(100, "xyx");
     }
 
 
-    @CacheSingleKey(key = "xyx_%s", type = CacheType.LOCAL)
-    public String test(String v) {
-        logger.info("[CacheProxy] test({}) in --------->", v);
-        return String.format("the value of key 'xyx_%s'", v);
+    @CacheSingleKey(type = CacheType.LOCAL, elementType = CacheValue.class)
+    public List<CacheValue> testListObjLocal() {
+        logger.info("[CacheProxy] testObjRedis in --------->");
+        List<CacheValue> list = new ArrayList<>();
+        list.add(new CacheValue(100, "xyx"));
+        list.add(new CacheValue(101, "xyx1"));
+        list.add(new CacheValue(102, "xyx2"));
+        return list;
     }
 
 
-    @CacheMultiKeys(key = "xyx_%s_%s", type = CacheType.LOCAL)
-    public String test(String v, List<Integer> ids) {
-        logger.info("[CacheProxy] test({}, {}) in --------->", v, ids);
-        return String.format("the value of key 'xyx_%s_%s'", v, ids);
+    @CacheSingleKey(elementType = CacheValue.class)
+    public List<CacheValue> testListObjRedis() {
+        logger.info("[CacheProxy] testObjRedis in --------->");
+        List<CacheValue> list = new ArrayList<>();
+        list.add(new CacheValue(100, "xyx"));
+        list.add(new CacheValue(101, "xyx1"));
+        list.add(new CacheValue(102, "xyx2"));
+        return list;
+    }
+
+
+    @CacheSingleKey(elementType = CacheValue.class)
+    public List<CacheValue> testListObjRedis1(Integer a, String b) {
+        logger.info("[CacheProxy] testObjRedis in --------->");
+        List<CacheValue> list = new ArrayList<>();
+        list.add(new CacheValue(100, "xyx"));
+        list.add(new CacheValue(101, "xyx1"));
+        list.add(new CacheValue(102, "xyx2"));
+        return list;
     }
 
 

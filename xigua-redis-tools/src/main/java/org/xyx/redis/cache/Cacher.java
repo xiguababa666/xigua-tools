@@ -1,5 +1,7 @@
 package org.xyx.redis.cache;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +17,12 @@ public interface Cacher {
      * @return 命中缓存的数据
      * */
     Object get(String key, Class<?> clazz);
+
+    /**
+     * @param key
+     * @return 命中缓存的数据
+     * */
+    Object get(String key, JavaType javaType);
 
     /**
      * @param keys

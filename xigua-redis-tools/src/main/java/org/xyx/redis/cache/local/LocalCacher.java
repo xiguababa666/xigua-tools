@@ -1,5 +1,6 @@
 package org.xyx.redis.cache.local;
 
+import com.fasterxml.jackson.databind.JavaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -9,7 +10,9 @@ import org.xyx.redis.cache.BaseCacher;
 import org.xyx.utils.ThreadPool;
 
 import javax.annotation.PreDestroy;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -80,10 +83,18 @@ public class LocalCacher extends BaseCacher implements InitializingBean {
         return data != null ? data.getData() : null;
     }
 
+    public Object get(String key) {
+        return getIfNotExpired(key);
+    }
 
     @Override
     public Object get(String key, Class<?> clazz) {
-        return getIfNotExpired(key);
+        return get(key);
+    }
+
+    @Override
+    public Object get(String key, JavaType javaType) {
+        return get(key);
     }
 
     @Override

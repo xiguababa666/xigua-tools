@@ -7,12 +7,14 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.xyx.redis.ReflectUtil;
 import org.xyx.redis.cache.anno.CacheMultiKeys;
 import org.xyx.redis.cache.anno.CacheSingleKey;
 import org.xyx.utils.JsonUtil;
 import org.xyx.utils.StringUtils;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 
@@ -26,6 +28,9 @@ public class CacheAspect {
 
 
     private static final Logger logger = LoggerFactory.getLogger(CacheAspect.class);
+
+    @Value("${spring.application.name:cache}")
+    private String appName;
 
 
     @Pointcut("@annotation(org.xyx.redis.cache.anno.CacheSingleKey)")
@@ -41,21 +46,22 @@ public class CacheAspect {
 
         CacheSingleKey dataCache = ReflectUtil.getAnnotation(point, CacheSingleKey.class);
 
-        String key = dataCache.key();
-        CacheType type = dataCache.type();
-
-        // todo Collection 怎么处理？
-        Class<?> result = dataCache.result();
-        Class<?> returnType = ReflectUtil.getMethod(point).getReturnType();
-        if (Collection.class.isAssignableFrom(returnType)) {
-            JavaType javaType = JsonUtil.getJavaType((Class<? extends Collection>) returnType, result);
-        }
-
+        Object cached;
         Object[] params = point.getArgs();
 
-        checkKey(key, params);
-        String cacheKey = generateSingleKey(key, params);
-        Object cached = type.getCacher().get(cacheKey, result);
+        Method method = ReflectUtil.getMethod(point);
+        String cacheKey = generateCacheKey(method.getName(), params);
+
+        Class<?> returnType = method.getReturnType();
+        CacheType type = dataCache.type();
+        if (Collection.class.isAssignableFrom(returnType)) {
+            Class<?> elementType = dataCache.elementType();
+            JavaType javaType = JsonUtil.getJavaType((Class<? extends Collection>) returnType, elementType);
+            cached = type.getCacher().get(cacheKey, javaType);
+        } else {
+            cached = type.getCacher().get(cacheKey, returnType);
+        }
+
         if (cached == null) {
             logger.info("[CacheAspect] not cached, cacheKey = {}", cacheKey);
             cached = point.proceed();
@@ -77,7 +83,7 @@ public class CacheAspect {
 
         String key = dataCache.key();
         CacheType type = dataCache.type();
-        Class<?> result = dataCache.result();
+        Class<?> result = dataCache.elementType();
 
         Object[] params = point.getArgs();
 
@@ -92,8 +98,12 @@ public class CacheAspect {
     }
 
 
-    private String generateSingleKey(String key, Object... params) {
-        return String.format(key, params);
+    private String generateCacheKey(String methodName, Object... params) {
+        StringBuilder sb = new StringBuilder(methodName);
+        for (Object p : params) {
+            sb.append("_").append(p);
+        }
+        return sb.toString();
     }
 
 

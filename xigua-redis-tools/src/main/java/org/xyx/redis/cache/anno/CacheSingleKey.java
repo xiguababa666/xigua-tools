@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface CacheSingleKey {
 
-    String key();
-
     /**
      * "redis cache" OR "local cache"
      * */
@@ -29,7 +27,9 @@ public @interface CacheSingleKey {
      * */
     long expire() default -1;
 
-
-    Class<?> result() default Object.class;
+    /**
+     * 返回集合元素的类型
+     * */
+    Class<?> elementType() default Object.class;
 
 }

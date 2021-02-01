@@ -1,5 +1,6 @@
 package org.xyx.redis.cache.redis;
 
+import com.fasterxml.jackson.databind.JavaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -10,7 +11,10 @@ import org.xyx.redis.cache.Cacher;
 import org.xyx.utils.JsonUtil;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * description here
@@ -32,6 +36,15 @@ public class RedisCacher extends BaseCacher implements Cacher {
         String val = (String) redisUtil.get(key);
         if (val != null) {
             return JsonUtil.jsonStr2Obj(val, clazz);
+        }
+        return null;
+    }
+
+    @Override
+    public Object get(String key, JavaType javaType) {
+        String val = (String) redisUtil.get(key);
+        if (val != null) {
+            return JsonUtil.jsonStr2Obj(val, javaType);
         }
         return null;
     }

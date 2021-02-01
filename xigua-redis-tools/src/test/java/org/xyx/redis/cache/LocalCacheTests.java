@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.xyx.redis.Application;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,16 +31,6 @@ public class LocalCacheTests {
 
 
     @Test
-    public void test1() {
-        String s = cacheProxy.test();
-        logger.info("[====LocalCacheTests====] 1 get value = {}", s);
-
-        s = cacheProxy.test();
-        logger.info("[====LocalCacheTests====] 2 get value = {}", s);
-    }
-
-
-    @Test
     public void testObjLocal() {
         CacheProxy.CacheValue s = cacheProxy.testObjLocal();
         logger.info("[====LocalCacheTests====] testObjLocal 1 get value = {}", s);
@@ -61,26 +50,35 @@ public class LocalCacheTests {
 
 
     @Test
-    public void test2() {
-        String s = cacheProxy.test("abc");
-        logger.info("[====LocalCacheTests====] 1 get value = {}", s);
+    public void testListObjLocal() {
+        List<CacheProxy.CacheValue> s = cacheProxy.testListObjLocal();
+        logger.info("[====LocalCacheTests====] testListObjLocal 1 get value = {}", s);
 
-//        s = cacheProxy.test("abc");
-//        logger.info("[====LocalCacheTests====] 2 get value = {}", s);
+        s = cacheProxy.testListObjLocal();
+        logger.info("[====LocalCacheTests====] testListObjLocal 2 get value = {}", s);
     }
 
 
     @Test
-    public void test3() {
-        List<Integer> ids = new ArrayList<>();
-        ids.add(1);
-        ids.add(2);
-        String s = cacheProxy.test("abc", ids);
-        logger.info("[====LocalCacheTests====] 1 get value = {}", s);
+    public void testListObjRedis() {
+        List<CacheProxy.CacheValue> s = cacheProxy.testListObjRedis();
+        logger.info("[====LocalCacheTests====] testListObjRedis 1 get value = {}", s);
 
-//        s = cacheProxy.test("abc");
-//        logger.info("[====LocalCacheTests====] 2 get value = {}", s);
+        s = cacheProxy.testListObjRedis();
+        logger.info("[====LocalCacheTests====] testListObjRedis 2 get value = {}", s);
     }
 
+
+    @Test
+    public void testListObjRedis1() {
+        List<CacheProxy.CacheValue> s = cacheProxy.testListObjRedis1(1, "abc");
+        logger.info("[====LocalCacheTests====] testListObjRedis1 1 get value = {}", s);
+
+        s = cacheProxy.testListObjRedis1(1, "abc");
+        logger.info("[====LocalCacheTests====] testListObjRedis1 2 get value = {}", s);
+
+        s = cacheProxy.testListObjRedis1(2, "abc");
+        logger.info("[====LocalCacheTests====] testListObjRedis1 2 get value = {}", s);
+    }
 
 }
