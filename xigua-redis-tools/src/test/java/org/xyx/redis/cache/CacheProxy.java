@@ -36,7 +36,7 @@ public class CacheProxy {
 
     @CacheSingleKey(type = CacheType.LOCAL, elementType = CacheValue.class)
     public List<CacheValue> testListObjLocal() {
-        logger.info("[CacheProxy] testObjRedis in --------->");
+        logger.info("[CacheProxy] testListObjLocal in --------->");
         List<CacheValue> list = new ArrayList<>();
         list.add(new CacheValue(100, "xyx"));
         list.add(new CacheValue(101, "xyx1"));
@@ -47,7 +47,7 @@ public class CacheProxy {
 
     @CacheSingleKey(elementType = CacheValue.class)
     public List<CacheValue> testListObjRedis() {
-        logger.info("[CacheProxy] testObjRedis in --------->");
+        logger.info("[CacheProxy] testListObjRedis in --------->");
         List<CacheValue> list = new ArrayList<>();
         list.add(new CacheValue(100, "xyx"));
         list.add(new CacheValue(101, "xyx1"));
@@ -58,7 +58,7 @@ public class CacheProxy {
 
     @CacheSingleKey(elementType = CacheValue.class)
     public List<CacheValue> testListObjRedis1(Integer a, String b) {
-        logger.info("[CacheProxy] testObjRedis in --------->");
+        logger.info("[CacheProxy] testListObjRedis1 in --------->");
         List<CacheValue> list = new ArrayList<>();
         list.add(new CacheValue(100, "xyx"));
         list.add(new CacheValue(101, "xyx1"));

@@ -11,3 +11,7 @@ spring:
         maxIdle: 5
         maxWait: 100
         minIdle: 0
+
+redisson:
+  address: redis://127.0.0.1:6379
+  password:

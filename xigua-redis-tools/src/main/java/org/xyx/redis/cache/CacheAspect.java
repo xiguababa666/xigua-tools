@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +11,6 @@ import org.xyx.redis.ReflectUtil;
 import org.xyx.redis.cache.anno.CacheMultiKeys;
 import org.xyx.redis.cache.anno.CacheSingleKey;
 import org.xyx.utils.JsonUtil;
-import org.xyx.utils.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -33,18 +31,8 @@ public class CacheAspect {
     private String appName;
 
 
-    @Pointcut("@annotation(org.xyx.redis.cache.anno.CacheSingleKey)")
-    public void aroundCacheSingleKey() {
-    }
-
-    @Pointcut("@annotation(org.xyx.redis.cache.anno.CacheMultiKeys)")
-    public void aroundCacheMultiKeys() {
-    }
-
-    @Around("aroundCacheSingleKey()")
-    public Object aroundCacheSingleKey(ProceedingJoinPoint point) throws Throwable {
-
-        CacheSingleKey dataCache = ReflectUtil.getAnnotation(point, CacheSingleKey.class);
+    @Around("@annotation(cacheSingleKey)")
+    public Object aroundCacheSingleKey(ProceedingJoinPoint point, CacheSingleKey cacheSingleKey) throws Throwable {
 
         Object cached;
         Object[] params = point.getArgs();
@@ -53,9 +41,9 @@ public class CacheAspect {
         String cacheKey = generateCacheKey(method.getName(), params);
 
         Class<?> returnType = method.getReturnType();
-        CacheType type = dataCache.type();
+        CacheType type = cacheSingleKey.type();
         if (Collection.class.isAssignableFrom(returnType)) {
-            Class<?> elementType = dataCache.elementType();
+            Class<?> elementType = cacheSingleKey.elementType();
             JavaType javaType = JsonUtil.getJavaType((Class<? extends Collection>) returnType, elementType);
             cached = type.getCacher().get(cacheKey, javaType);
         } else {
@@ -73,23 +61,17 @@ public class CacheAspect {
 
     }
 
-    /**
-     * todo 多key时，已命中和未命中的分别如何处理
-     * */
-    @Around("aroundCacheMultiKeys()")
-    public Object aroundCacheMultiKeys(ProceedingJoinPoint point) throws Throwable {
+    @Around("@annotation(cacheMultiKeys)")
+    public Object aroundCacheMultiKeys(ProceedingJoinPoint point, CacheMultiKeys cacheMultiKeys) throws Throwable {
 
-        CacheMultiKeys dataCache = ReflectUtil.getAnnotation(point, CacheMultiKeys.class);
-
-        String key = dataCache.key();
-        CacheType type = dataCache.type();
-        Class<?> result = dataCache.elementType();
+        Method method = ReflectUtil.getMethod(point);
+        CacheType type = cacheMultiKeys.type();
+        Class<?> result = cacheMultiKeys.elementType();
 
         Object[] params = point.getArgs();
 
-        checkKey(key, params);
         int collectionIndex = getCollectionIndex(params);
-        Map<String, Object> keyMap = generateKeys(key, collectionIndex, params);
+        Map<String, Object> keyMap = generateKeys(method.getName(), collectionIndex, params);
         List<String> cacheKeys = new LinkedList<>(keyMap.keySet());
         Map<String, Object> cached = type.getCacher().get(cacheKeys);
         logger.info("[CacheAspect] cacheKeys = {}", cacheKeys);
@@ -99,7 +81,8 @@ public class CacheAspect {
 
 
     private String generateCacheKey(String methodName, Object... params) {
-        StringBuilder sb = new StringBuilder(methodName);
+        StringBuilder sb = new StringBuilder(appName);
+        sb.append("_").append(methodName);
         for (Object p : params) {
             sb.append("_").append(p);
         }
@@ -108,7 +91,7 @@ public class CacheAspect {
 
 
 
-    private Map<String, Object> generateKeys(String key, int collectionIndex, Object... params) {
+    private Map<String, Object> generateKeys(String methodName, int collectionIndex, Object... params) {
 
         Map<String, Object> keys = new LinkedHashMap<>();
         Collection<Object> ids = (Collection<Object>) params[collectionIndex];
@@ -121,7 +104,7 @@ public class CacheAspect {
                     p[i] = params[i];
                 }
             }
-            keys.put(String.format(key, p), id);
+            keys.put(generateCacheKey(methodName, p), id);
         }
         return keys;
 
@@ -148,14 +131,5 @@ public class CacheAspect {
         return collectionIndex;
     }
 
-
-    private void checkKey(String key, Object... params) {
-        int paramCount = params.length;
-        int keyParamCount = StringUtils.subStrCount(key, "%s");
-        if (paramCount != keyParamCount) {
-            throw new CacheDataException(String.format("cache key format not match! key:%s, params:%s",
-                    key, Arrays.toString(params)));
-        }
-    }
 
 }

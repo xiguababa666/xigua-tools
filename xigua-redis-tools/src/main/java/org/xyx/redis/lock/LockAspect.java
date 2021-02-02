@@ -3,15 +3,17 @@ package org.xyx.redis.lock;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.xyx.redis.ReflectUtil;
 import org.xyx.utils.StringUtils;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,20 +30,28 @@ public class LockAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LockAspect.class);
 
-    @Around("@annotation(org.xyx.redis.lock.TryLock)")
-    public Object aroundTryLock(ProceedingJoinPoint point) throws Throwable {
+    @Value("${spring.application.name:}")
+    private String appName;
 
-        Method method = getMethod(point);
-        TryLock tryLock = method.getAnnotation(TryLock.class);
+    private final ExpressionParser parser = new SpelExpressionParser();
+
+    @Around("@annotation(tryLock)")
+    public Object aroundTryLock(ProceedingJoinPoint point, TryLock tryLock) throws Throwable {
+
+        Method method = ReflectUtil.getMethod(point);
         String key = tryLock.key();
+        if (StringUtils.isEmpty(key)) {
+            key = method.getName();
+        }
+        String[] rules = tryLock.rules();
         int waitTime = tryLock.waitTime();
         int holdTime = tryLock.holdTime();
         TimeUnit unit = tryLock.timeUnit();
-        String[] fields = tryLock.fields();
         LockType lockType = tryLock.type();
 
-        Object[] params = getTryLockParams(point, method);
-        Object[] keyParams = getLockKeyValues(params, fields);
+        //获取方法的参数值
+        Object[] args = point.getArgs();
+        List<Object> keyParams = getSPELParams(method, args, rules);
         String lockKey = generateLockKey(key, keyParams);
 
         Object result;
@@ -64,89 +74,32 @@ public class LockAspect {
         return result;
     }
 
-    private Method getMethod(ProceedingJoinPoint point) {
-        MethodSignature methodSignature = (MethodSignature) point.getSignature();
-        return methodSignature.getMethod();
-    }
 
-    /**
-     * 取key的唯一标识
-     *
-     * @param specifiedParams 指定入参
-     * @param fields          指定成员变量名
-     * @return 排好序的参数值
-     */
-    private Object[] getLockKeyValues(Object[] specifiedParams, String[] fields) {
+    private List<Object> getSPELParams(Method method, Object[] args, String[] spel) {
 
-        if (specifiedParams == null || specifiedParams.length == 0) {
-            // 未指定入参
-            return new Object[0];
+        if (spel == null || spel.length == 0) {
+            return Collections.emptyList();
         }
 
-        if (fields.length == 0) {
-            // 未指定成员变量，直接使用入参值
-            return specifiedParams;
+        //获取方法的参数值
+        EvaluationContext context = ReflectUtil.bindParam(method, args);
+        List<Object> keyParams = new LinkedList<>();
+
+        //根据spel表达式获取值
+        for (String r : spel) {
+            keyParams.add(parser.parseExpression(r).getValue(context));
         }
-
-        if (specifiedParams.length > 1) {
-            // 指定成员变量，但指定了多个入参，不知道取那个入参的成员变量
-            throw new DistributedLockerException(String.format("@TryLock: too many specified params to chose! params size:%s fields:%s",
-                    specifiedParams.length, Arrays.toString(fields)));
-        }
-
-        return getLockKeyValueFromMembers(specifiedParams[0], fields);
-
-    }
-
-    private Object[] getLockKeyValueFromMembers(Object baseParam, String[] members) {
-
-        Object[] ret = new Object[members.length];
-        Class<?> c = baseParam.getClass();
-        String curMember = "";
-        try {
-            for (int i = 0; i < members.length; i++) {
-                // 反射取field值
-                curMember = members[i];
-                Field field = c.getDeclaredField(curMember);
-                field.setAccessible(true);
-                ret[i] = field.get(baseParam);
-            }
-        } catch (NoSuchFieldException e) {
-            throw new DistributedLockerException(
-                    String.format("@TryLock: parameter [%s] no such field [%s], check your *fields*", baseParam.getClass(), curMember));
-        } catch (IllegalAccessException ex) {
-            throw new DistributedLockerException(ex);
-        }
-        return ret;
-    }
-
-    private Object[] getTryLockParams(ProceedingJoinPoint point, Method method) {
-        Parameter[] ps = method.getParameters();
-        Object[] args = point.getArgs();
-        List<Object> params = new LinkedList<>();
-        for (int i = 0; i < ps.length; i++) {
-            TryLockParam tryLockParam = ps[i].getAnnotation(TryLockParam.class);
-            if (tryLockParam != null) {
-                params.add(args[i]);
-            }
-        }
-        return params.toArray();
-
+        return keyParams;
     }
 
 
-    private void checkKey(String key, Object... params) {
-        int paramCount = params.length;
-        int keyParamCount = StringUtils.subStrCount(key, "%s");
-        if (paramCount != keyParamCount) {
-            throw new DistributedLockerException(String.format("lock key format not match! key:%s, params:%s",
-                    key, Arrays.toString(params)));
+    private String generateLockKey(String key, List<Object> params) {
+        StringBuilder sb = new StringBuilder(appName);
+        sb.append('_').append(key);
+        for (Object o : params) {
+            sb.append('_').append(o.toString());
         }
-    }
-
-    private String generateLockKey(String key, Object... params) {
-        checkKey(key, params);
-        return String.format("xyx:lock:" + key, params);
+        return sb.toString();
     }
 
 

@@ -19,10 +19,21 @@ import java.util.concurrent.TimeUnit;
 public @interface TryLock {
 
     /**
-     * key
-     * 满足如下规则就行： abc  或  abc:%s:%s  或  abc_%s_%s  或  abc-%s-%s
-     */
-    String key();
+     * 默认为methodName
+     * */
+    String key() default "";
+
+    /**
+     * SPEL表达式
+     *
+     * @TryLock(key = "xyx", rules = {"#a"})
+     * public void testLockKey(Integer a, String b) {}
+     *
+     * @TryLock(key = "xyx", rules = {"#param.id", "#param.name"})
+     * public void testLockKey(LockParam param) {}
+     *
+     * */
+    String[] rules() default {};
 
     /**
      * 默认redis分布式锁
@@ -44,22 +55,5 @@ public @interface TryLock {
      * 时间单位
      */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
-
-
-    /**
-     * 指定成员变量作唯一标识
-     * 【注】指定此项时，认为是在params指定的对象中取成员变量作，params项只能指定一个
-     * 例：
-     *
-     * @TryLock(key = "abc:%s", params = {"param3"}, members = {"orderId"})
-     * public void test(String param1, String param2, OrderInfo param3) {
-     * }
-     * <p>
-     * class OrderInfo {
-     * private String orderId;
-     * ......
-     * }
-     */
-    String[] fields() default {};
 
 }
