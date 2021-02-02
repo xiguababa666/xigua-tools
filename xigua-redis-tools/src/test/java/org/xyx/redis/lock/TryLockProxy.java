@@ -27,7 +27,7 @@ public class TryLockProxy {
     }
 
 
-    @TryLock(key = "xyx", rules = {"#abc", "#edf"})
+    @TryLock(key = "xyx", rules = {"#edf"})
     public void testLockKey(Integer abc, String edf) {
         System.out.println(String.format("[testLockKey] thread = %s, abc=%s start <<<<<<<<========", Thread.currentThread().getName(), abc));
         doBusiness();

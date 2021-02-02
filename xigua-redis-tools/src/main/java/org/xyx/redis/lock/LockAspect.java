@@ -95,7 +95,7 @@ public class LockAspect {
 
     private String generateLockKey(String key, List<Object> params) {
         StringBuilder sb = new StringBuilder(appName);
-        sb.append('_').append(key);
+        sb.append("_LOCK_").append(key);
         for (Object o : params) {
             sb.append('_').append(o.toString());
         }
