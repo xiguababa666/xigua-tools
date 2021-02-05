@@ -13,6 +13,7 @@ import org.xyx.redis.ReflectUtil;
 import org.xyx.utils.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,11 +40,12 @@ public class LockAspect {
     public Object aroundTryLock(ProceedingJoinPoint point, TryLock tryLock) throws Throwable {
 
         Method method = ReflectUtil.getMethod(point);
-        String key = tryLock.key();
+        String key = tryLock.name();
         if (StringUtils.isEmpty(key)) {
             key = method.getName();
         }
-        String[] rules = tryLock.rules();
+        String[] keys = tryLock.keys();
+        Arrays.sort(keys);
         int waitTime = tryLock.waitTime();
         int holdTime = tryLock.holdTime();
         TimeUnit unit = tryLock.timeUnit();
@@ -51,7 +53,7 @@ public class LockAspect {
 
         //获取方法的参数值
         Object[] args = point.getArgs();
-        List<Object> keyParams = getSPELParams(method, args, rules);
+        List<Object> keyParams = getSPELParams(method, args, keys);
         String lockKey = generateLockKey(key, keyParams);
 
         Object result;

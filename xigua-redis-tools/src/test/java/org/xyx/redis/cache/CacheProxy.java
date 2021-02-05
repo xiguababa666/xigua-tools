@@ -2,10 +2,13 @@ package org.xyx.redis.cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.xyx.redis.cache.anno.CacheData;
 import org.xyx.redis.cache.anno.CacheSingleKey;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,6 +22,37 @@ import java.util.List;
 public class CacheProxy {
 
     private static final Logger logger = LoggerFactory.getLogger(CacheProxy.class);
+
+    @CacheData(name = "abc",
+            type = CacheType.LOCAL,
+            keys = {"#a", "#b"})
+    public String testCache1(String a, Integer b) {
+        // do query
+        return "xyx";
+    }
+
+    // 默认redis
+    @CacheData(name = "abc",
+            keys = {"#a"},
+            elementType = CacheValue.class)
+    public List<CacheValue> testCache2(String a, Integer b) {
+        // do query
+        List<CacheValue> ret = new LinkedList<>();
+        ret.add(new CacheValue(100, "xyx"));
+        return ret;
+    }
+
+    @CacheData(name = "abc",
+            keys = {"#ids"},
+            elementType = CacheValue.class)
+    public List<CacheValue> testCache3(List<Integer> ids) {
+        // do query
+        List<CacheValue> ret = new ArrayList<>();
+        for (Integer id : ids) {
+            ret.add(new CacheValue(id, "xyx_" + id));
+        }
+        return ret;
+    }
 
 
     @CacheSingleKey(type = CacheType.LOCAL)
@@ -64,6 +98,23 @@ public class CacheProxy {
         list.add(new CacheValue(101, "xyx1"));
         list.add(new CacheValue(102, "xyx2"));
         return list;
+    }
+
+
+
+    @Cacheable(cacheNames = "xyx_test", key = "#p0")
+    public List<CacheValue> testSpringCacheable(List<Integer> ids) {
+        List<CacheValue> ret = new ArrayList<>();
+        for (Integer id : ids) {
+            ret.add(new CacheValue(id, "b_" + id));
+        }
+        logger.info("[---------------->] not cached, ids:{}", ids);
+        return ret;
+    }
+
+    @Cacheable(cacheNames = "xyx_test", key = "#a")
+    public CacheValue testSpringCacheable2(Integer a, String b) {
+        return new CacheValue(1, "b_" + 1);
     }
 
 

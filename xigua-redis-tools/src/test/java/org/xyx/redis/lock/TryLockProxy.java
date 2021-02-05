@@ -27,7 +27,7 @@ public class TryLockProxy {
     }
 
 
-    @TryLock(key = "xyx", rules = {"#edf"})
+    @TryLock(name = "xyx", keys = {"#edf"})
     public void testLockKey(Integer abc, String edf) {
         System.out.println(String.format("[testLockKey] thread = %s, abc=%s start <<<<<<<<========", Thread.currentThread().getName(), abc));
         doBusiness();
@@ -35,7 +35,7 @@ public class TryLockProxy {
     }
 
 
-    @TryLock(key = "xyx", rules = {"#param.id", "#param.name"})
+    @TryLock(name = "xyx", keys = {"#param.id", "#param.name"})
     public void testLockKey(LockParam param) {
         System.out.println(String.format("[testLockKey] thread = %s, param=%s start <<<<<<<<========", Thread.currentThread().getName(), param));
         doBusiness();
@@ -43,7 +43,7 @@ public class TryLockProxy {
     }
 
 
-    @TryLock(key = "xyx", rules = {"#param.abc"})
+    @TryLock(name = "xyx", keys = {"#param.abc"})
     public void testLockNoSuchField(LockParam param) {
     }
 
@@ -51,7 +51,7 @@ public class TryLockProxy {
     /**
      * 等3秒
      * */
-    @TryLock(key = "xyx", waitTime = 3)
+    @TryLock(name = "xyx", waitTime = 3)
     public void testLockWait() {
 
         try {
@@ -65,7 +65,7 @@ public class TryLockProxy {
     /**
      * 等4秒，保持3秒，处理5秒
      * */
-    @TryLock(key = "xyx", holdTime = 3)
+    @TryLock(name = "xyx", holdTime = 3)
     public void testLockLease() {
         System.out.printf("%s  in:%s%n", Thread.currentThread().getName(), System.currentTimeMillis());
         try {
@@ -75,7 +75,7 @@ public class TryLockProxy {
         System.out.printf("%s out:%s%n", Thread.currentThread().getName(), System.currentTimeMillis());
     }
 
-    @TryLock(key = "xyx", waitTime = 4)
+    @TryLock(name = "xyx", waitTime = 4)
     public void testLockLease2() {
         System.out.printf("%s  in:%s%n", Thread.currentThread().getName(), System.currentTimeMillis());
     }

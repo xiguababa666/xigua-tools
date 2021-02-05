@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.xyx.redis.Application;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,10 +21,10 @@ import java.util.List;
 
 @SpringBootTest(classes = Application.class)
 @RunWith(SpringRunner.class)
-public class LocalCacheTests {
+public class CacheTests {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalCacheTests.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheTests.class);
 
 
     @Resource
@@ -80,5 +81,19 @@ public class LocalCacheTests {
         s = cacheProxy.testListObjRedis1(2, "abc");
         logger.info("[====LocalCacheTests====] testListObjRedis1 2 get value = {}", s);
     }
+
+
+    @Test
+    public void testSpringCacheable() {
+        List<Integer> ids = new ArrayList<>();
+        ids.add(1);
+        ids.add(2);
+        ids.add(3);
+        ids.add(4);
+        CacheProxy.CacheValue s = cacheProxy.testSpringCacheable2(1, "abc");
+        logger.info("[====testSpringCacheable====] {}", s);
+
+    }
+
 
 }

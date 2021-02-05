@@ -16,7 +16,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface CacheMultiKeys {
 
-    String key();
+    String name() default "";
+
+    String[] keys() default {};
 
     /**
      * "redis cache" OR "local cache"

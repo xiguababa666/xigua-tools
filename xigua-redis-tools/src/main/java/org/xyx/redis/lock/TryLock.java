@@ -21,19 +21,19 @@ public @interface TryLock {
     /**
      * 默认为methodName
      * */
-    String key() default "";
+    String name() default "";
 
     /**
      * SPEL表达式
      *
-     * @TryLock(key = "xyx", rules = {"#a"})
+     * @TryLock(key = "xyx", keys = {"#a"})
      * public void testLockKey(Integer a, String b) {}
      *
-     * @TryLock(key = "xyx", rules = {"#param.id", "#param.name"})
+     * @TryLock(key = "xyx", keys = {"#param.id", "#param.name"})
      * public void testLockKey(LockParam param) {}
      *
      * */
-    String[] rules() default {};
+    String[] keys() default {};
 
     /**
      * 默认redis分布式锁

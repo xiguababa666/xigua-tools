@@ -66,7 +66,7 @@ public class CacheAspect {
 
         Method method = ReflectUtil.getMethod(point);
         CacheType type = cacheMultiKeys.type();
-        Class<?> result = cacheMultiKeys.elementType();
+        Class<?> elementType = cacheMultiKeys.elementType();
 
         Object[] params = point.getArgs();
 
