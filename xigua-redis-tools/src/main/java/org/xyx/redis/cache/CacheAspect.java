@@ -27,7 +27,7 @@ public class CacheAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(CacheAspect.class);
 
-    @Value("${spring.application.name:cache}")
+    @Value("${spring.application.name:}")
     private String appName;
 
 
@@ -52,6 +52,7 @@ public class CacheAspect {
 
         if (cached == null) {
             logger.info("[CacheAspect] not cached, cacheKey = {}", cacheKey);
+            // todo 1.空数据处理
             cached = point.proceed();
             type.getCacher().set(cacheKey, cached);
         } else {
@@ -61,6 +62,7 @@ public class CacheAspect {
 
     }
 
+    // todo 2.多key处理逻辑
     @Around("@annotation(cacheMultiKeys)")
     public Object aroundCacheMultiKeys(ProceedingJoinPoint point, CacheMultiKeys cacheMultiKeys) throws Throwable {
 
@@ -82,7 +84,7 @@ public class CacheAspect {
 
     private String generateCacheKey(String methodName, Object... params) {
         StringBuilder sb = new StringBuilder(appName);
-        sb.append("_").append(methodName);
+        sb.append("_CACHE_").append(methodName);
         for (Object p : params) {
             sb.append("_").append(p);
         }
