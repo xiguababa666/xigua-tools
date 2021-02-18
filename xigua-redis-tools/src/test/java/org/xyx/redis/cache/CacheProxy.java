@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.xyx.redis.cache.anno.CacheData;
 import org.xyx.redis.cache.anno.CacheSingleKey;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,10 +62,39 @@ public class CacheProxy {
         return new CacheValue(100, "xyx");
     }
 
+    @CacheSingleKey(type = CacheType.LOCAL)
+    public int[] testObjLocal2() {
+        logger.info("[CacheProxy] testObjLocal2 in --------->");
+        return new int[]{1};
+    }
+
     @CacheSingleKey
-    public CacheValue testObjRedis() {
+    public CacheValue[] testObjRedis() {
         logger.info("[CacheProxy] testObjRedis in --------->");
+        return new CacheValue[] {new CacheValue(100, "xyx"), new CacheValue(111, "aaa")};
+    }
+
+
+    @CacheSingleKey
+    public CacheValue testObjRedis2() {
+        logger.info("[CacheProxy] testObjRedis2 in --------->");
         return new CacheValue(100, "xyx");
+    }
+
+
+    @CacheSingleKey
+//    public BigDecimal testObjRedis3() {
+    public Boolean testObjRedis3() {
+        logger.info("[CacheProxy] testObjRedis2 in --------->");
+//        return new BigDecimal("1.111111111");
+        return true;
+    }
+
+
+    @CacheSingleKey
+    public String testObjRedisNull() {
+        logger.info("[CacheProxy] testObjRedisNull in --------->");
+        return null;
     }
 
 

@@ -5,13 +5,13 @@ package org.xyx.redis.cache.local;
  *
  * @author xueyongxin
  */
-public class CacheData {
+public class LocalData {
 
     private final long time;
 
     private final Object data;
 
-    public CacheData(long time, Object data) {
+    public LocalData(long time, Object data) {
         this.time = time;
         this.data = data;
     }

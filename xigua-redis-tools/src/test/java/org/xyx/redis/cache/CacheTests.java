@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.xyx.redis.Application;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +43,41 @@ public class CacheTests {
 
     @Test
     public void testObjRedis() {
-        CacheProxy.CacheValue s = cacheProxy.testObjRedis();
+        CacheProxy.CacheValue[] s = cacheProxy.testObjRedis();
         logger.info("[====LocalCacheTests====] testObjRedis 1 get value = {}", s);
 
         s = cacheProxy.testObjRedis();
         logger.info("[====LocalCacheTests====] testObjRedis 2 get value = {}", s);
+    }
+
+    @Test
+    public void testObjRedis2() {
+        CacheProxy.CacheValue s = cacheProxy.testObjRedis2();
+        logger.info("[====LocalCacheTests====] testObjRedis2 1 get value = {}", s);
+
+        s = cacheProxy.testObjRedis2();
+        logger.info("[====LocalCacheTests====] testObjRedis2 2 get value = {}", s);
+    }
+
+
+    @Test
+    public void testObjRedis3() {
+//        BigDecimal s = cacheProxy.testObjRedis3();
+        Boolean s = cacheProxy.testObjRedis3();
+        logger.info("[====LocalCacheTests====] testObjRedis3 1 get value = {}", s);
+
+        s = cacheProxy.testObjRedis3();
+        logger.info("[====LocalCacheTests====] testObjRedis3 2 get value = {}", s);
+    }
+
+
+    @Test
+    public void testObjRedisNull() {
+        String s = cacheProxy.testObjRedisNull();
+        logger.info("[====LocalCacheTests====] testObjRedis3 1 get value = {}", s);
+
+        s = cacheProxy.testObjRedisNull();
+        logger.info("[====LocalCacheTests====] testObjRedis3 2 get value = {}", s);
     }
 
 

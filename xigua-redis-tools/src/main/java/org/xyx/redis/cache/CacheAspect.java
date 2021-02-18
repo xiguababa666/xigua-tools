@@ -30,7 +30,9 @@ public class CacheAspect {
     @Value("${spring.application.name:}")
     private String appName;
 
-
+    /**
+     * todo 1.expire time
+     * */
     @Around("@annotation(cacheSingleKey)")
     public Object aroundCacheSingleKey(ProceedingJoinPoint point, CacheSingleKey cacheSingleKey) throws Throwable {
 
@@ -41,6 +43,10 @@ public class CacheAspect {
         String cacheKey = generateCacheKey(method.getName(), params);
 
         Class<?> returnType = method.getReturnType();
+        if (returnType.isPrimitive()) {
+            throw new CacheDataException(String.format("A primitive return type[%s] is not supported!", returnType));
+        }
+
         CacheType type = cacheSingleKey.type();
         if (Collection.class.isAssignableFrom(returnType)) {
             Class<?> elementType = cacheSingleKey.elementType();
@@ -52,7 +58,7 @@ public class CacheAspect {
 
         if (cached == null) {
             logger.info("[CacheAspect] not cached, cacheKey = {}", cacheKey);
-            // todo 1.空数据处理
+            // todo 2. empty data
             cached = point.proceed();
             type.getCacher().set(cacheKey, cached);
         } else {
@@ -62,7 +68,7 @@ public class CacheAspect {
 
     }
 
-    // todo 2.多key处理逻辑
+    // todo 3.multi-key
     @Around("@annotation(cacheMultiKeys)")
     public Object aroundCacheMultiKeys(ProceedingJoinPoint point, CacheMultiKeys cacheMultiKeys) throws Throwable {
 

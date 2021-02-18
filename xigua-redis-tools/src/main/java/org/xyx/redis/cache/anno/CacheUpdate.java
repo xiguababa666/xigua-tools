@@ -9,12 +9,14 @@ import java.lang.annotation.Target;
 
 /**
  *
+ * 缓存更新时delete（暂时先删除）
+ *
  * @author xueyongxin
  */
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface CacheData {
+public @interface CacheUpdate {
 
     /**
      * 缓存名
@@ -31,16 +33,5 @@ public @interface CacheData {
      * "redis cache" OR "local cache"
      * */
     CacheType type() default CacheType.REDIS;
-
-    /**
-     * 过期时间，单位：秒
-     *
-     * */
-    long expire() default -1;
-
-    /**
-     * 返回集合元素的类型
-     * */
-    Class<?> elementType() default Object.class;
 
 }

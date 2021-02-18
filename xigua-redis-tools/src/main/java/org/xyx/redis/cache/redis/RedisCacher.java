@@ -11,6 +11,7 @@ import org.xyx.redis.cache.Cacher;
 import org.xyx.utils.JsonUtil;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,10 +35,29 @@ public class RedisCacher extends BaseCacher implements Cacher {
     @Override
     public Object get(String key, Class<?> clazz) {
         String val = (String) redisUtil.get(key);
-        if (val != null) {
-            return JsonUtil.jsonStr2Obj(val, clazz);
+        if (val == null) {
+            return null;
         }
-        return null;
+        if (String.class.isAssignableFrom(clazz)) {
+            return val;
+        } else if (Integer.class.isAssignableFrom(clazz)) {
+            return Integer.valueOf(val);
+        } else if (Long.class.isAssignableFrom(clazz)) {
+            return Long.valueOf(val);
+        } else if (Short.class.isAssignableFrom(clazz)) {
+            return Short.valueOf(val);
+        } else if (Byte.class.isAssignableFrom(clazz)) {
+            return Byte.valueOf(val);
+        } else if (Double.class.isAssignableFrom(clazz)) {
+            return Double.valueOf(val);
+        } else if (Float.class.isAssignableFrom(clazz)) {
+            return Float.valueOf(val);
+        } else if (Boolean.class.isAssignableFrom(clazz)) {
+            return Boolean.valueOf(val);
+        } else if (BigDecimal.class.isAssignableFrom(clazz)) {
+            return new BigDecimal(val);
+        }
+        return JsonUtil.jsonStr2Obj(val, clazz);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class LocalCacher extends BaseCacher implements InitializingBean {
 
     private final static Logger logger = LoggerFactory.getLogger(LocalCacher.class);
 
-    private final Map<String, CacheData> cache = new ConcurrentHashMap<>();
+    private final Map<String, LocalData> cache = new ConcurrentHashMap<>();
 
     private ScheduledExecutorService executor;
 
@@ -61,16 +61,16 @@ public class LocalCacher extends BaseCacher implements InitializingBean {
     }
 
 
-    private CacheData wrapCacheData(Object v, long time) {
-        return new CacheData(System.currentTimeMillis() + generateTimeOffset(time), v);
+    private LocalData wrapCacheData(Object v, long time) {
+        return new LocalData(System.currentTimeMillis() + generateTimeOffset(time), v);
     }
 
     private boolean isExpired(String key) {
-        CacheData cacheData = cache.get(key);
-        if (cacheData == null) {
+        LocalData localData = cache.get(key);
+        if (localData == null) {
             return true;
         }
-        long expire = cacheData.getTime();
+        long expire = localData.getTime();
         return expire - System.currentTimeMillis() <= 0;
     }
 
@@ -79,7 +79,7 @@ public class LocalCacher extends BaseCacher implements InitializingBean {
             cache.remove(key);
             return null;
         }
-        CacheData data = cache.get(key);
+        LocalData data = cache.get(key);
         return data != null ? data.getData() : null;
     }
 
