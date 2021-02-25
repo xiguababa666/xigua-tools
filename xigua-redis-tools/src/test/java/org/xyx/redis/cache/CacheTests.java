@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.xyx.redis.Application;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 

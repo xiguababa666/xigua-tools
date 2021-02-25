@@ -30,10 +30,10 @@ public class RedissonLocker implements DistributedLocker {
     }
 
     @Override
-    public boolean tryLock(String lockKey, TimeUnit unit, int waitTime, int leaseTime) {
+    public boolean tryLock(String lockKey, TimeUnit unit, int waitTime, int holdTime) {
         RLock lock = redissonClient.getLock(lockKey);
         try {
-            return lock.tryLock(waitTime, leaseTime, unit);
+            return lock.tryLock(waitTime, holdTime, unit);
         } catch (InterruptedException e) {
             return false;
         }

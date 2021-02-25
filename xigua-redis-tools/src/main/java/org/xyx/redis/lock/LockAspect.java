@@ -99,7 +99,7 @@ public class LockAspect {
         StringBuilder sb = new StringBuilder(appName);
         sb.append("_LOCK_").append(key);
         for (Object o : params) {
-            sb.append('_').append(o.toString());
+            sb.append('_').append(o);
         }
         return sb.toString();
     }

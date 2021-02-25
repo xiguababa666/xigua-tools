@@ -31,7 +31,7 @@ public class ReentrantLocker implements DistributedLocker {
     }
 
     @Override
-    public boolean tryLock(String lockKey, TimeUnit unit, int waitTime, int leaseTime) {
+    public boolean tryLock(String lockKey, TimeUnit unit, int waitTime, int holdTime) {
         try {
             return getLock(lockKey).tryLock(waitTime, unit);
         } catch (InterruptedException e) {

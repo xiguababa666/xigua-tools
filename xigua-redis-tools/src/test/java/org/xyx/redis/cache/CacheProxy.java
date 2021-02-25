@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.xyx.redis.cache.anno.CacheData;
 import org.xyx.redis.cache.anno.CacheSingleKey;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

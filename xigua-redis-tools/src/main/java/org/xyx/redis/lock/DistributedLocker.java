@@ -10,7 +10,7 @@ public interface DistributedLocker {
 
     void lock(String lockKey, TimeUnit unit, int leaseTime);
 
-    boolean tryLock(String lockKey, TimeUnit unit, int waitTime, int leaseTime);
+    boolean tryLock(String lockKey, TimeUnit unit, int waitTime, int holdTime);
 
     void unlock(String lockKey);
 
