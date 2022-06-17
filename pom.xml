@@ -27,7 +27,7 @@
     <properties>
         <redisson.version>3.7.5</redisson.version>
         <retrotif.version>2.4.0</retrotif.version>
-        <fastjson.version>1.2.49</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <lombok.version>1.16.18</lombok.version>
         <feign-version>10.2.3</feign-version>
         <slf4j-version>1.7.28</slf4j-version>
